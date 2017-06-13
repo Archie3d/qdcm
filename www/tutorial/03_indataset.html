@@ -1,0 +1,123 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="../style.css" type="text/css" rel="stylesheet" />
+    <link href="../prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="../prettify/prettify.js"></script>
+    <title>QDCM: DICOM for Qt</title>
+</head>
+<body onload="prettyPrint()">
+    <p><a href="../index.html"><< Back to the main page</a></p>
+    <h2>Inspecting DICOM dataset</h2>
+    
+    <p class="text">
+        In DICOM data set each tag is identified by its key. The key is composed of
+        two 16-bit values: group number, and element number.
+        QDCM stores DICOM tags using <code>QVariant</code> type:
+        <pre class="prettyprint lang-cpp linenums">
+DcmDataset dataset;
+// ...
+QVariant v = dataset.tagValue(DcmTagKey(0x0002, 0x0010));
+</pre>         
+    </p>
+    
+    <p class="text">
+        If you know the data type of a tag, you may convert it directly from
+        <code>QVariant</code>:
+        <pre class="prettyprint lang-cpp linenums">
+QString patientName = dataset.tagValue(DcmTagKey(0x0010, 0x0010)).toString();
+</pre>                 
+    </p>
+    
+    <p class="text">
+        If the tag you try to access is missing in the dataset a void
+        <code>QVariant</code> value is returned.
+    </p>
+    
+    <p class="text">
+        You may also access DICOM tag by its names instead of using group, element pair.
+        QDCM has a build-in dictionary for known DICOM tags that maps tag keys with their names:
+        <pre class="prettyprint lang-cpp linenums">
+QString patientName = dataset.tagValue("PatientName").toString();
+</pre>                 
+        Or even:
+        <pre class="prettyprint lang-cpp linenums">
+QString patientName = dataset["PatientName"].toString();
+</pre> 
+    </p>
+    
+    <p class="text">
+        Some DICOM tags may have value multiplicity higher than 1. These tags usually have
+        string representation, and multiple values are separated by <code>'\'<code> character.
+        In order to access such tags you need use <code>tagValues()</code> method that
+        returns <code>QVariantList</code>:
+        <pre class="prettyprint lang-cpp linenums">
+QVariantList pixelSpacing = dataset.tagValues("PixelSpacing");
+</pre>         
+    </p>
+    
+    <p class="text">
+        When parsing DICOM data QDCM does not preserve original tags. For instance
+        QDCM always inserts group tags even if they were missing in the original
+        DICOM source. Grouping tags allows faster access when searching for a particular
+        tag.
+    </p>
+    
+    <p class="text">
+        You can also get a pointer to a tag stored in a dataset. This allows you
+        exploring the tag in details (e.g. getting value representation):
+        <pre class="prettyprint lang-cpp linenums">
+DcmTag *tagPtr = dataset.findTag("RescaleSlope");
+if (tagPtr && tagPtr->vr() == DcmVr::DS) {
+    DcmTagDS *tagDSPtr = dynamic_cast<DcmTagDS*>(tagPtr);
+    double slope = tagDSPtr->asDouble();
+}
+</pre>         
+        
+    </p>
+    
+    <h3>Accessing sequence tags</h3>
+    
+    <p class="text">
+        Sequence tags can be accessed by a pointer. A sequence tag itself is a list
+        of item tags, which in its turn is a list of tag groups.
+        <pre class="prettyprint lang-cpp linenums">
+// Display all tags from a sequence (1234, 5678)        
+DcmTag *tagPtr = dataset.findTag(DcmTagKey(0x1234, 0x5678));
+if (tagPtr && tagPtr->vr() == DcmVr::SQ) {
+    DcmTagSQ *tagSQPtr = dynamic_cast<DcmTagSQ*>(tagPtr);
+    DcmTagList items = tagSQPtr->items();
+    // Iterate over items
+    foreach (DcmTag *itemTagPtr, items.list()) {
+        DcmTagItem *itemPtr = dynamic_cast<DcmTagItem*>(itemTagPtr);
+        DcmTagList itemGroups = itemPtr->tagGroups();
+        // Iterate over groups in an item
+        foreach (DcmTag *tagGroupPtr, itemGroups.list()) {
+            DcmTagGroup *groupPtr = dynamic_cast<DcmTagGroup*>(tagGroupPtr);
+            // Iterate over tags in a group
+            foreach (DcmTag *innerTagPtr, groupPtr->tags()) {
+                qDebug() << innerTagPtr->tagKey().toString()
+                         << innerTagPtr->vr().toString()
+                         << innerTagPtr->value();
+            }
+        }
+    }
+}
+</pre>         
+    </p>
+    
+    <hr>
+    <address>
+        ©2012 by
+        <a href="mailto:arthur.benilov@gmail.com">Arthur Benilov</a>
+        <p class="hostedby">
+            <a href="http://sourceforge.net/">
+                Project Web Hosted by
+                <br>
+                <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=265589&type=13" alt="SourceForge.net">
+            </a>
+        </p>
+    </address>
+
+</body>   
+</html>

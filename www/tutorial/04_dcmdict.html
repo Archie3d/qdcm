@@ -1,0 +1,97 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="../style.css" type="text/css" rel="stylesheet" />
+    <link href="../prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="../prettify/prettify.js"></script>
+    <title>QDCM: DICOM for Qt</title>
+</head>
+<body onload="prettyPrint()">
+    <p><a href="../index.html"><< Back to the main page</a></p>
+    <h2>Extending DICOM tags dictionary</h2>
+    
+    <p class="text">
+        DICOM tags are identified by (group, element) key. QDCM maintains a dictionary
+        that maps tag keys to tag names and information on tag data types. This dictionary
+        is used when parsing DICOM data.
+    </p>
+    
+    <p class="text">
+        QDCM dictionary is stored in XML format and is linked with <code>dcmcore</code>
+        module. This dictionary contains only known non-private tags.
+        There are several ways the dictionary can be extended to handle unknown and private tags:
+        <ol>
+            <li>Modifying XML file located at <code>qdcm-code/code/dcmcore/resources/dict/dicom.xml</code>
+            <li>Adding missing entries in runtime
+            <li>Adding missing entries by loading an additional XML file in runtime
+        </ol>
+        The first option is not recommended as it will affect QDCM code base.
+    </p>
+
+    <h3>Extending dictionary by adding tag descriptions manually</h3>
+    <p class="text">
+        Dictionary can be extended by adding tag descriptions for unknown tags:
+        <pre class="prettyprint lang-cpp linenums">
+// Get QDCM dictionary instance
+DcmDictionary *dictPtr = DcmDictionary::getInstancePtr();
+
+// Describe private tag
+DcmTagDescription privateTag("MyPrivateTag",            // tag name
+                             DcmTagKey(0x2345, 0x6789), // tag key
+                             DcmVr::DS,                 // tag type
+                             1,                         // minimal multiplicity
+                             DcmMultiplicity_Unknown    // maximal multiplicity
+                            );
+                       
+// Populate the dictionary    
+dictPtr->addTagDescription(privateTag);                            
+</pre>         
+        
+        Having this done, the private tag (2345, 6789) will be recognised and one can
+        write for instance:
+        <pre class="prettyprint lang-cpp linenums">
+DcmDataset dataset;
+
+double value = dataset["MyPrivateTag"].toDouble();
+</pre>        
+    </p>
+    
+    <h3>Extending by loading external XML file</h3>
+    <p class="text">
+        If there are many tags to be described, a better idea might be to have
+        a separate XML file that describes those tags:
+        <pre class="prettyprint lang-xml linenums">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;dictionary&gt;
+    &lt;tag key="2345,6789" vr="DS" vm="1-n"&gt;MyPrivateTag&lt;/tag&gt;
+&lt;/dictionary&gt;
+</pre>
+        You can further load you XML file to extend the dictionary:
+        <pre class="prettyprint lang-cpp linenums">
+DcmDictionary *dictPtr = DcmDictionary::getInstancePtr();
+dictPtr->populateFromXML("mydict.xml");
+</pre>        
+    </p>
+    
+    <p class="text">
+        QDCM dictionary object is a singleton, meaning that there is only once
+        instance if the dictionary exist in the application. If you change the dictionary
+        it will affect all QDCM classes used through all your application.
+    </p>
+    
+    
+    <hr>
+    <address>
+        ©2012 by
+        <a href="mailto:arthur.benilov@gmail.com">Arthur Benilov</a>
+        <p class="hostedby">
+            <a href="http://sourceforge.net/">
+                Project Web Hosted by
+                <br>
+                <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=265589&type=13" alt="SourceForge.net">
+            </a>
+        </p>
+    </address>
+
+</body>
+</html>

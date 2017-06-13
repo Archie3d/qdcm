@@ -1,0 +1,117 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="../style.css" type="text/css" rel="stylesheet" />
+    <link href="../prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="../prettify/prettify.js"></script>
+    <title>QDCM: DICOM for Qt</title>
+</head>
+<body onload="prettyPrint()">
+    <p><a href="../index.html"><< Back to the main page</a></p>
+    <h2>Dealing with DICOM images</h2>
+    
+    <p class="text">
+        Currently QDCM does not support compressed images. So if you have to deal with
+        compressed data, you will need to decompress a pixel data yourself.        
+    </p>
+    
+    <p class="text">
+        The following example demonstrates DICOM image loading:
+        <pre class="prettyprint lang-cpp linenums">
+DcmFile file("dicom.dcm");
+
+DcmDataset dataset = file.read();
+if (!file.isError()) {
+    DcmImage image(dataset);
+    
+    qDebug() << "width:" << image.width();
+    qDebug() << "height:" << image.height();
+    qDebug() << "frames:" << image.frames();
+    qDebug() << "bits allocated:" << image.bitsAllocated();
+    qDebug() << "bits stored:" << image.bitsStored();
+    qDebug() << "PI:" << image.photometricInterpretation().toString();
+    qDebug() << "Compressed:" << (image.pixelData->isEncapsulated() ? "YES" : "NO");
+}
+</pre>        
+    </p>
+    
+    <h3>Monochrome images</h3>
+    <p class="text">
+        Monochrome images are handled via <code>DcmMonochromeImage</code> class.
+        An image photometric interpretation must be <code>MONOCHROME1</code> or
+        <code>MONOCHROME2</code> in order to be considered as monochrome.
+    </p>
+    
+    <p class="text">
+        Here is an example showing how monochrome image pixels can be accessed:
+        <pre class="prettyprint lang-cpp linenums">
+DcmFile file("dicom.dcm");
+
+DcmDataset dataset = file.read();
+if (!file.isError()) {
+    DcmImage image(dataset);
+    if (image.photometricInterpretation().isGrayscale() {
+        DcmMonochromeImage monoImage(dataset);
+        
+        int x = 10; // pixel coordinates
+        int y = 20;
+        
+        DcmUnsignedShort pixelValue = monoImage.rawPixel(x, y);
+        double rescaledPixelValue = monoImage.rescaledPixel(x, y);
+    }
+}
+</pre>
+        Rescaled pixel value is calculated using <code>RescaleSlope</code> and
+        <code>RescaleIntercept</code> tags in a dataset.
+    </p>
+    
+    <p class="text">
+        In order to transform DICOM grayscale image in to a <code>QImage</code>
+        you will have to provide a <i>transfer function</i>. Transfer function maps
+        DICOM pixel data value (which may take up to 16 bits) into a <code>QColor</code>.
+        You may define a transfer function by specifying reference points that associate
+        pixel value to a specific color. Intermediate values will be linearly interpolated.
+        Usually DICOM images contain <code>WindowCenter</code> and <code>WindowWidth</code>
+        tags that can be used to construct a transfer function for adapted view:
+        <pre class="prettyprint lang-cpp linenums">
+DcmFile file("dicom.dcm");
+
+DcmDataset dataset = file.read();
+if (!file.isError()) {
+    DcmImage image(dataset);
+    if (image.photometricInterpretation().isGrayscale() {
+        DcmMonochromeImage monoImage(dataset);
+        
+        DcmImageTransferFunction tf;
+
+        double windowCenter = monoImage.windowCenter();
+        double windowWidth = monoImage.windowWidth();
+
+        tf.addReferencePoint(windowCenter - windowWidth / 2, QColor(0, 0, 0));
+        tf.addReferencePoint(windowCenter + windowWidth / 2, QColor(255, 255, 255));
+        
+        // Getting Qt image...
+        QImage qImage = monoImage.toQImage(tf);
+        
+        // ...and saving it as a PNG file
+        qImage.save("dicom.png");
+    }
+}
+</pre>
+
+    </p>
+    
+    <hr>
+    <address>
+        ©2012 by
+        <a href="mailto:arthur.benilov@gmail.com">Arthur Benilov</a>
+        <p class="hostedby">
+            <a href="http://sourceforge.net/">
+                Project Web Hosted by
+                <br>
+                <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=265589&type=13" alt="SourceForge.net">
+            </a>
+        </p>
+    </address>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="../style.css" type="text/css" rel="stylesheet" />
+    <link href="../prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="../prettify/prettify.js"></script>
+    <title>QDCM: DICOM for Qt</title>
+</head>
+<body onload="prettyPrint()">
+    <p><a href="../index.html"><< Back to the main page</a></p>
+    <h2>Reading DICOM files</h2>
+    
+    <p class="text">
+        Reading DICOM file using QDCM is very easy:
+        <pre class="prettyprint lang-cpp linenums">
+DcmFile file("dicom.dcm");
+DcmDataset dataset = file.read();
+if (file.isError()) {
+    qDebug() << "Error reading DICOM file:" << file.errorText();
+} else {
+    // Process the dataset here
+}</pre>        
+    </p>
+    
+    <p class="text">
+        Please pay attention that returned DICOM dataset may be invalid if
+        reading operation or parsing went wrong. You must always check the file error
+        condition before using the returned dataset.
+    </p>
+    
+    <p class="text">
+        When reading DICOM files, QDCM will guess the transfer syntax to be used
+        as well as the presence of 128 bytes header. Quite often DICOM files are saved
+        without this header. Such files will be as well successfully read by QDCM.
+    </p>
+
+    <hr>
+    <address>
+        ©2012 by
+        <a href="mailto:arthur.benilov@gmail.com">Arthur Benilov</a>
+        <p class="hostedby">
+            <a href="http://sourceforge.net/">
+                Project Web Hosted by
+                <br>
+                <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=265589&type=13" alt="SourceForge.net">
+            </a>
+        </p>
+    </address>
+    
+</body>
+</html>

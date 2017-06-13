@@ -1,0 +1,76 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="../style.css" type="text/css" rel="stylesheet" />
+    <link href="../prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="../prettify/prettify.js"></script>
+    <title>QDCM: DICOM for Qt</title>
+</head>
+<body onload="prettyPrint()">
+    <p><a href="../index.html"><< Back to the main page</a></p>
+    <h2>Compiling QDCM</h2>
+    
+    <p class="text">
+        In order to compile QDCM successfully you will need Qt SDK installed.
+        This is the only dependency QDCM has.
+        QDCM makes use of <a href="http://www.cmake.org/">cmake cross-platform build system</a>,
+        so you will need to have cmake installed as well.
+    </p>
+    
+    <h3>Compiling on Linux and OS X</h3>
+    
+    <p class="text">
+        Once you have QDCM source code cloned from git repository lets say in
+        <code>qdcm-code</code> directory, your first step is to configure the
+        project using cmake. It is recommended to keep the build directory apart
+        from the source code. In this example below QDCM compilation is done in
+        <code>qdcm-build</code> directory located at the same level as <code>qdcm-code</code>.
+        <p class="code">
+            $ cd ~<br>
+            $ git clone git://git.code.sf.net/p/qdcm/code qdcm-code<br>
+            $ mkdir qdcm-build<br>
+            $ cd qdcm-build<br>
+            $ ccmake ../qdcm-code<br>
+        </p>
+        Once in ccmake window, hit 'c' key to configure the project.        
+    </p>
+    <p class="text">
+        Specify <code>CMAKE_BUILD_TYPE</code> as <code>Release</code>.
+        You may also wish to disable QDCM unit tests compilation if you do not
+        intend to modify the source code and run those tests.
+    </p>
+    <p class="image">
+        <img src="cmake_osx.png" />
+    </p>
+    
+    <p class="text">
+        Once the project is configured you may compile it launching <code>make</code>:
+        <p class="code">
+            $ make
+        </p>
+    </p>
+    
+    <h3>Compiling on Windows</h3>
+    
+    <p class="text">
+        Compiling for MS Windows is somehow similar if you use mingw version of Qt.
+        For MS Visual C++ based Qt, you may wish to use cmake to generate nmake build files,
+        or directly a Visual Studio project.
+    </p>
+    
+
+    <hr>
+    <address>
+        ©2012 by
+        <a href="mailto:arthur.benilov@gmail.com">Arthur Benilov</a>
+        <p class="hostedby">
+            <a href="http://sourceforge.net/">
+                Project Web Hosted by
+                <br>
+                <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=265589&type=13" alt="SourceForge.net">
+            </a>
+        </p>
+    </address>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+# Files ignored by git
+
+# Editors backup files
+*.swp
+*.bak
+
+# Latex artefacts
+*.aux
+*.log
+*.out
+*.toc
+
+# Mac OS system files
+.DS_Store
+
+# Qt Creator artefacts
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+#project files
+.project
+.cproject
+.settings
+*.autosave
+
+# KDevelop files
+*.kdev4
+
+#backup files from some editors
+*~
+
+# Archives
+*.gz
+*.tar
+*.tgz
+*.zip
+*.rar
+
+# Thumbnails
+Thumbs.db

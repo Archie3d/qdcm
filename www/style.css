@@ -1,0 +1,79 @@
+body {
+    font-family: verdana, sans serif;
+    font-size: 10pt;
+    color: black;
+    background-color: white;
+}
+
+address {
+    font-family: verdana, sans serif;
+    font-size: 10pt;
+    font-style: italic;
+    color: #999999;
+    background-color: white;
+}
+    
+img {
+    border: 0;
+}
+    
+code {
+    font-family: consolas, courier, mono;
+    font-size: 9pt
+    color: navy;
+}    
+    
+.code {    
+    font-family: consolas, courier, mono;
+    font-size: 9pt;
+    color: navy;
+}
+    
+.banner {
+    font-family: tahoma, arial, sans-serif;
+    font-weight: bold;
+    font-size: 36pt;
+    color: #3399CC;
+}
+
+.image {
+    font-size: 7pt; 
+}
+
+h2 {
+    font-family: verdana, sans-serif;
+    font-size: 16pt;
+    color: #0099CC;
+}
+
+h3 {
+    font-size: 12pt;
+    color: #0099CC;
+}
+    
+.header1 {
+    font-family: arial, sans-serif;
+    font-size: 16pt;
+    color: #996600;
+}
+    
+.header2 {
+    font-family: arial, sans-serif;
+    font-size: 13pt;
+    color: #666633;
+    vertical-align: top;
+}
+    
+.text {
+    font-family: verdana, sans serif;
+    font-size: 10pt;
+    color: black;
+}
+ 
+.hostedby {
+    font-family: verdana, sans-serif;
+    font-size: 9pt;
+    color: #CCCCCC;
+    background-color: white;
+    text-align: center;
+}    
